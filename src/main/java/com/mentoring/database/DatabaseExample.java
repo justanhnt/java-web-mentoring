@@ -13,6 +13,7 @@ public class DatabaseExample {
     private static final String DELETING_STUDENT_SQL_QUERY = "DELETE FROM STUDENT_TABLE WHERE NAME = ?";
     private static final String LIST_STUDENT_SQL_QUERY = "SELECT * FROM STUDENT_TABLE";
     private static final String COUNT_STUDENT_SQL_QUERY = "SELECT COUNT(NAME) AS TOTAL FROM STUDENT_TABLE";
+    private static final String COUNT_STUDENT_WITH_CONDITION_SQL_QUERY = "SELECT COUNT(NAME) AS TOTAL FROM STUDENTLIST WHERE AGE";
 
     private static void addingSomeData() {
         Connection conn = null;
@@ -94,11 +95,11 @@ public class DatabaseExample {
                         break;
                     case "LIST_ALL": {
                         ResultSet rs = listAllStmt.executeQuery();
-                        System.out.println("Name" + "\t\t\t" + "Age");
+                        System.out.printf("%-20s%10s%n", "Name", "Age");
                         while (rs.next()) {
                             String name = rs.getString("NAME");
                             int age = rs.getInt("AGE");
-                            System.out.println(name + "\t\t\t" + age);
+                            System.out.printf("%-20s%10d%n", name, age);
                         }
                         rs.close();
                         break;
@@ -107,13 +108,17 @@ public class DatabaseExample {
                         ResultSet rs = count.executeQuery();
                         while (rs.next()) {
                             // sure that length of rs is 1;
-                            System.out.println("Total " + rs.getInt(1) + " students");
+                            System.out.printf("Total %d students%n", rs.getInt(1) );
                         }
                         break;
                     }
                     case "COUNT_CONDITION": {
-                        Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-                        ResultSet rs = stmt.executeQuery("SELECT COUNT(NAME) AS TOTAL FROM STUDENTLIST WHERE AGE" + query[1] + query[2]);
+                        Statement stmt = conn.createStatement();
+                        ResultSet rs = stmt.executeQuery(
+                                new StringBuilder().append(COUNT_STUDENT_WITH_CONDITION_SQL_QUERY)
+                                        .append(query[1])
+                                        .append(query[2])
+                                        .toString());
                         int c = 0;
                         while (rs.next()) {
                             c = rs.getInt(1);
