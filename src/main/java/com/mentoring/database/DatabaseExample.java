@@ -59,12 +59,13 @@ public class DatabaseExample {
             }
         }
 
-        Connection conn = null;
+
 
         // Get the queries
         File queryFile = new File("meta/db_query");
         Scanner sc = new Scanner(queryFile);
 
+        Connection conn = null;
         try {
             Class.forName(H2_JDBC_DRIVER);
             conn = DriverManager.getConnection(H2_DB_URL);
@@ -131,6 +132,15 @@ public class DatabaseExample {
         }
         catch (Exception e){
             e.printStackTrace();
+        } finally {
+            sc.close();
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
